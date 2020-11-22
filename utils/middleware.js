@@ -8,6 +8,21 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7)
+  }
+  return null
+}
+
+const tokenExtractor = (request, response, next) => {
+  // extracts the JWT token and adds it as a property of the request object
+  const token = getTokenFrom(request)
+  request.token = token
+  next()
+}
+
 // Unknown endpoint
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
@@ -15,12 +30,14 @@ const unknownEndpoint = (request, response) => {
 
 // Error handler
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
+  logger.error(error.name, error.message)
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
+  } else if (error.name === 'JsonWebTokenError') {
+    return response.status(401).json({ error: 'invalid token' })
   }
 
   next(error)
@@ -29,5 +46,6 @@ const errorHandler = (error, request, response, next) => {
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  tokenExtractor
 }
