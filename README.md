@@ -3,7 +3,10 @@ Back-end of the simple bloglist application, built with Node.js. Part of a simpl
 Another repo has been set up with the front-end of the bloglist application.
 
 Link to app hosted on Heroku: 
-https://lit-cove-24214.herokuapp.com/api/blogs
+https://lit-cove-24214.herokuapp.com/
+*Credentials for testing:*
+UN: fredb
+PW: fredb
 
 ## Features
 - Jest framework for automated unit testing
